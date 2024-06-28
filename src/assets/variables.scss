@@ -1,0 +1,121 @@
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --main-color: #222;
+  --background-color: var(--active-light-color);
+
+  //invert
+  --main-color-invert: var(--active-light-color);
+  --background-color-invert: #222;
+
+  --active-dark-color: #222;
+  --active-light-color: #fff;
+  --active-secondary-light-color: #f3f3f3;
+  --active-secondary-dark-color: #d0d0d0;
+
+  /* accent color */
+  --accent-yellow-color: #fcd90d;
+  --accent-blue-light-color: #b2c9e9;
+  --accent-blue-dark-color: #024a97;
+  --accent-green-light-color: #dae8ab;
+  --accent-green-dark-color: #c5cc24;
+  --accent-red-light-color: #f44336;
+  --accent-peach-color: #f7d08b;
+  --accent-pink-light-color: #fed8c5;
+}
+
+//@media (prefers-color-scheme: dark) {
+//  :root {
+//    --main-color: var(--active-light-color);
+//    --background-color: var(--active-dark-color);
+//
+//    //invert
+//    --main-color-invert: #222;
+//    --background-color-invert: var(--active-light-color);
+//
+//    --active-secondary-light-color: #d0d0d0;
+//    --active-secondary-dark-color: #f3f3f3;
+//  }
+//}
+
+[data-theme='dark'] {
+  --main-color: var(--active-light-color);
+  --background-color: var(--active-dark-color);
+
+  //invert
+  --main-color-invert: #222;
+  --background-color-invert: var(--active-light-color);
+
+  --active-secondary-light-color: #d0d0d0;
+  --active-secondary-dark-color: #f3f3f3;
+
+}
+[data-theme='light'] {
+  --main-color: var(--main-color);
+  --background-color: var(--active-light-color);
+}
+
+body {
+  color: var(--main-color);
+  background: var(--background-color);
+  font-family: 'Raleway', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 14px;
+  transition: background-color .3s ease-in-out, color .3s ease-in-out;
+  -webkit-transition: background-color .3s ease-in-out, color .3s ease-in-out;
+  -moz-transition: background-color .3s ease-in-out, color .3s ease-in-out;
+  -ms-transition: background-color .3s ease-in-out, color .3s ease-in-out;
+  -o-transition: background-color .3s ease-in-out, color .3s ease-in-out;
+}
+
+.container {
+  width: calc(1160px + 120px);
+  padding: 0 60px;
+  margin: 0 auto;
+}
+
+// font-text
+.t {
+  line-height: normal;
+
+  &--10 {
+    font-size: 10px;
+  }
+
+  &--12 {
+    font-size: 12px;
+  }
+
+  &--14 {
+    font-size: 14px;
+  }
+
+  &--16 {
+    font-size: 16px;
+  }
+
+  &--20 {
+    font-size: 20px;
+  }
+
+  &--24 {
+    font-size: 24px;
+  }
+
+  &--32 {
+    font-size: 32px;
+  }
+}
+
+// font-weight
+
+.f {
+  &--5 {
+    font-weight: 500;
+  }
+
+  &--6 {
+    font-weight: 600;
+  }
+}
