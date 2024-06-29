@@ -86,7 +86,6 @@ const filterCategory = (category: string) => {
 	}
 
 	.ui-header__link {
-		text-decoration: none;
 		padding: 8px;
 		background-color: var(--active-light-color);
 		color: var(--active-dark-color);

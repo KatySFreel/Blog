@@ -5,17 +5,22 @@
 		:class="[
       'ui-button f f--5 t t--14',
       `ui-button--${props.theme}`,
+      { 'ui-button--icon' : props.iconPosition },
       props.iconPosition ? `ui-button--icon-${props.iconPosition}` : ''
     ]"
 		@click="$emit('click', $event)"
 	>
 		{{ props.text }}
 
-		<UiSvg
+		<div
 			v-if="props.icon"
-			:name="props.icon"
-			class="ui-button__link"
-		/>
+			class="ui-button__icon-wrap"
+		>
+			<UiSvg
+				:name="props.icon"
+				class="ui-button__icon"
+			/>
+		</div>
 	</button>
 
 	<a
@@ -23,17 +28,22 @@
 		:href="`/${props.link}`"
 		:class="[
       'ui-button f f--5 t t--14',
-       `ui-button--${props.theme}`,
-       props.iconPosition ? `ui-button--icon-${props.iconPosition}` : ''
+      `ui-button--${props.theme}`,
+      { 'ui-button--icon' : props.iconPosition },
+      props.iconPosition ? `ui-button--icon-${props.iconPosition}` : ''
     ]"
 	>
 		{{ props.text }}
 
-		<UiSvg
+		<div
 			v-if="props.icon"
-			:name="props.icon"
-			class="ui-button__link"
-		/>
+			class="ui-button__icon-wrap"
+		>
+			<UiSvg
+				:name="props.icon"
+				class="ui-button__icon"
+			/>
+		</div>
 	</a>
 </template>
 
@@ -45,7 +55,7 @@ const props = defineProps<{
 	text: string
 	type: 'button' | 'link'
 	theme?: string
-	iconPosition?: string
+	iconPosition?: string | null
 	link?: string | null
 	icon?: string | null
 	isView: boolean
@@ -83,13 +93,30 @@ const emit = defineEmits(['click'])
         background-color: var(--active-secondary-dark-color);
       }
     }
+
+	  &--icon {
+		  padding: 0;
+
+		  &-left {
+			  flex-direction: row-reverse;
+			  padding-right: 12px;
+		  }
+
+		  &-right {
+			  padding-left: 12px;
+		  }
+	  }
   }
 
-  .ui-button__link {
+  .ui-button__icon-wrap {
     width: 40px;
     height: 40px;
     border-radius: 100%;
     background-color: var(--main-color);
     color: var(--main-color-invert);
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  flex-shrink: 0;
   }
 </style>

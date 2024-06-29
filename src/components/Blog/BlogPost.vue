@@ -3,18 +3,33 @@
 		v-if="post"
 		class="blog-post"
 	>
-		<h3 class="blog-post__title f f--6 t t--32">
-			{{ post.title }}
-		</h3>
+		<div class="blog-post__wrapper">
+			<div class="blog-post__title-wrap">
+				<h1 class="blog-post__title f f--6 t t--32">
+					{{ post.title }}
+				</h1>
 
-		<p class="blog-post__text">
-			{{ post.content }}
-		</p>
+				<button
+					:class="['blog-post__btn', isLiked ? 'blog-post__btn--like' : 'blog-post__btn--unlike']"
+					@click="toggleLike"
+				>
+					<UiSvg
+						class="blog-post__icon"
+						name="like"
+					/>
+				</button>
+			</div>
 
-		<div class="likes">
-			<button @click="toggleLike">
-				{{ post.likes }} {{ isLiked ? '❤️' : '♡' }}
-			</button>
+			<img
+				v-if="post.image"
+				:src="post.image"
+				:alt="post.title"
+				class="blog-post__img"
+			>
+
+			<p class="blog-post__text">
+				{{ post.content }}
+			</p>
 		</div>
 	</article>
 </template>
@@ -24,6 +39,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import type { Post } from "@/types/types";
+import UiSvg from "@/Ui/UiSvg.vue";
 
 const route = useRoute()
 const post = ref<Post | null>(null)
@@ -74,20 +90,68 @@ onMounted(fetchPost)
 
 <style>
 .blog-post {
-	padding: 20px;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	background: #f9f9f9;
+	height: 100vh;
+	max-height: calc(100vh - 120px);
 }
 
-.likes {
-	margin-top: 20px;
+.blog-post__wrapper {
+	padding: 20px 32px;
+	border-radius: 20px;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--active-secondary-light-color);
+	gap: 30px;
+	height: 100%;
+	overflow-y: auto;
 }
 
-.likes button {
-	background: none;
-	border: none;
+.blog-post__title-wrap {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	column-gap: 20px;
+}
+
+.blog-post__title {
+	width: 100%;
+	max-width: 762px;
+}
+
+.blog-post__btn {
+	flex-shrink: 0;
 	cursor: pointer;
-	font-size: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 100%;
+	border: 1px solid var(--active-secondary-light-color);
+	color: var(--active-secondary-dark-color);
+	width: 40px;
+	height: 40px;
+	transition: all .3s ease-in-out;
+
+	&:hover {
+		color: var(--accent-red-light-color);
+	}
+
+	&:focus {
+		border: 1px solid var(--active-secondary-dark-color);
+	}
+}
+
+.blog-post__btn--like {
+	color: var(--accent-red-light-color);
+
+	&:hover {
+		border: 1px solid var(--active-secondary-light-color);
+	}
+}
+
+.blog-post__img {
+	width: 100%;
+	max-width: 700px;
+	height: 100%;
+	max-height: 500px;
+	object-fit: cover;
 }
 </style>

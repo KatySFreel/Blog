@@ -12,36 +12,53 @@
 
 			<div class="category-page__navigation">
 				<UiSearch
-					v-model="searchQuery"
-					@input="searchPosts"
+					class="category-page__search"
+					@input="handleSearchInput"
 				/>
 
 				<UiButton
-					v-if="canShowMore && !searchQuery"
+					v-if="canShowPrevious"
+					type="button"
+					theme="stroke"
+					icon="btn"
+					icon-position="left"
+					:text="`Показать предыдущие ${previousPostsCount}`"
+					is-view
+					class="category-page__btn"
+					@click="showPreviousPosts"
+				/>
+
+				<UiButton
+					v-if="canShowMore"
 					type="button"
 					theme="stroke"
 					:text="`Показать еще ${remainingPostsCount} из ${totalPosts}`"
-					@click="showMorePosts"
 					is-view
+					class="category-page__btn"
+					@click="showMorePosts"
 				/>
 			</div>
 		</div>
 
 		<BlogList
-			:posts="paginatedPosts"
+			v-if="posts.length"
+			:posts="posts"
 			class="category-page__list"
 		/>
+
+		<UiLoader v-else />
 	</section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import { fetchPosts, searchPosts as apiSearchPosts } from '@/api'
 import BlogList from "@/components/Blog/BlogList.vue"
 import UiButton from "@/Ui/UiButton.vue"
-import UiSearch from "@/Ui/UiSearch.vue";
-import type { Post } from "@/types/types";
+import UiSearch from "@/Ui/UiSearch.vue"
+import type { Post } from "@/types/types"
+import UiLoader from "@/Ui/UiLoader.vue";
 
 const props = defineProps<{
 	title: String,
@@ -51,77 +68,58 @@ const props = defineProps<{
 const posts = ref<Post[]>([])
 const searchQuery = ref('')
 const visiblePosts = ref(5)
-const filteredPosts = ref<Post[]>([])
 const totalPosts = ref(0)
 const route = useRoute()
+const currentPage = ref(1)
 
-const paginatedPosts = computed(() => {
-	return filteredPosts.value.slice(0, visiblePosts.value)
-})
+const canShowMore = computed(() => currentPage.value * visiblePosts.value < totalPosts.value)
 
-const canShowMore = computed(() => {
-	return visiblePosts.value < filteredPosts.value.length
-})
+const remainingPostsCount = computed(() => Math.min(5, totalPosts.value - currentPage.value * visiblePosts.value))
 
-const remainingPostsCount = computed(() => {
-	const remaining = filteredPosts.value.length - visiblePosts.value
-	return remaining > 5 ? 5 : remaining
-})
+const canShowPrevious = computed(() => currentPage.value > 1)
 
-const fetchPosts = async () => {
-	try {
-		const response = await axios.get('https://61e90d89e1f16abe.mokky.dev/posts')
-		posts.value = response.data
-		filterPosts()
-	} catch (error) {
-		console.log(error)
+const previousPostsCount = computed(() => visiblePosts.value)
+
+const loadPosts = async (search = '', page = 1)  => {
+	const category = routeCategory()
+	if (search) {
+		const { posts: fetchedPosts, totalPosts: fetchedTotal } = await apiSearchPosts(search, visiblePosts.value, page, ['-date', `-likes`])
+		posts.value = fetchedPosts
+		totalPosts.value = fetchedTotal
+	} else {
+		const { posts: fetchedPosts, totalPosts: fetchedTotal } = await fetchPosts(visiblePosts.value, page, category, ['-date', `-likes`])
+		posts.value = fetchedPosts
+		totalPosts.value = fetchedTotal
+	}
+	currentPage.value = page
+}
+
+const showMorePosts = async () => {
+	await loadPosts(searchQuery.value, currentPage.value + 1)
+}
+
+const showPreviousPosts = async () => {
+	if (currentPage.value > 1) {
+		await loadPosts(searchQuery.value, currentPage.value - 1)
 	}
 }
 
-const showMorePosts = () => {
-	visiblePosts.value += 5
+const searchPosts = async () => {
+	await loadPosts(searchQuery.value)
 }
 
-const searchPosts = () => {
-	filterPosts()
-	visiblePosts.value = 5
+const handleSearchInput = (searchValue: string) => {
+	searchQuery.value = searchValue
+	searchPosts()
 }
 
-const filterPosts = () => {
-	const category = route.path === '/' ? '' : route.path.substring(1).toLowerCase()
-	filteredPosts.value = posts.value.filter(post => {
-		const matchesSearch = post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || post.summary.toLowerCase().includes(searchQuery.value.toLowerCase())
-		const matchesCategory = !category || post.category.toLowerCase() === category
-		return matchesSearch && matchesCategory
-	})
-	totalPosts.value = filteredPosts.value.length
-}
-
-const handleCategoryChange = (event: CustomEvent) => {
-	filterPosts()
-	visiblePosts.value = 5
-}
+const routeCategory = () => route.path === '/' ? '*' : route.path.substring(1).toLowerCase()
 
 watch(() => route.path, () => {
-	filterPosts()
-	visiblePosts.value = 5
+	loadPosts(searchQuery.value)
 })
 
-watch(searchQuery, (newQuery, oldQuery) => {
-	if (newQuery === '') {
-		visiblePosts.value = 5
-		filterPosts()
-	}
-})
-
-onMounted(() => {
-	fetchPosts()
-	window.addEventListener('filter-category', handleCategoryChange as EventListener)
-})
-
-onBeforeUnmount(() => {
-	window.removeEventListener('filter-category', handleCategoryChange as EventListener)
-})
+onMounted(() => loadPosts(searchQuery.value))
 </script>
 
 <style lang="scss">
@@ -130,6 +128,7 @@ onBeforeUnmount(() => {
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: 23px;
+	column-gap: 20px;
 }
 
 .category-page__title-wrap {

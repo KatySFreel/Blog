@@ -1,14 +1,12 @@
 <template>
 	<div
 		class="ui-search"
-		type="button"
 		:class="{ active: isActive || inputValue }"
 	>
 		<UiSvg
 			name="search"
 			class="ui-search__icon ui-search__icon-search"
 		/>
-
 		<input
 			type="text"
 			v-model="inputValue"
@@ -18,50 +16,34 @@
 			@focus="isActive = true"
 			@blur="onBlur"
 			@click.stop
-		>
-
+		/>
 		<button
 			v-if="inputValue"
 			type="button"
 			class="ui-search__icon ui-search__icon--clear"
 			@click.stop="clearSearch"
 		>
-			<UiSvg
-				name="close"
-			/>
+			<UiSvg name="close" />
 		</button>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineEmits, defineProps } from 'vue'
+import { ref, watch, defineEmits } from 'vue'
 import UiSvg from './UiSvg.vue'
 
-const props = defineProps({
-	modelValue: {
-		type: String,
-		default: ''
-	}
-})
-
-const emit = defineEmits(['update:modelValue', 'input'])
+const emit = defineEmits(['input'])
 
 const isActive = ref(false)
-const inputValue = ref(props.modelValue)
-
-watch(() => props.modelValue, (newVal) => {
-	inputValue.value = newVal
-})
+const inputValue = ref('')
 
 const onInput = () => {
-	emit('update:modelValue', inputValue.value)
 	emit('input', inputValue.value)
 }
 
 const clearSearch = () => {
 	isActive.value = false
 	inputValue.value = ''
-	emit('update:modelValue', inputValue.value)
 	emit('input', inputValue.value)
 }
 
@@ -103,7 +85,7 @@ const onBlur = () => {
 		}
 
 		.ui-search__input {
-			width: 243px;
+			width: 150px;
 			opacity: 1;
 		}
 	}

@@ -1,10 +1,13 @@
 export interface Post {
-  id: number
-  title: string
-  summary: string
-  content: string
-  category: string
-  likes: number
+  id: Number
+  title: String
+  summary: String
+  content: String
+  date: String
+  author: String
+  category: String
+  likes: Number
+  image?: String
 }
 
 export interface Category {

@@ -3,14 +3,14 @@ import HomePage from '@/view/HomePage.vue'
 import DesignPage from '@/view/DesignPage.vue'
 import ItPage from '@/view/ItPage.vue'
 import ManagementPage from '@/view/ManagementPage.vue'
-import BlogPost from '@/components/Blog/BlogPost.vue'
+import PostPage from '@/view/PostPage.vue'
 
 const routes = [
   { path: '/', component: HomePage },
   { path: '/design', component: DesignPage },
   { path: '/it', component: ItPage },
   { path: '/management', component: ManagementPage },
-  { path: '/post/:id', component: BlogPost }
+  { path: '/post/:id', component: PostPage }
 ]
 
 const router = createRouter({
